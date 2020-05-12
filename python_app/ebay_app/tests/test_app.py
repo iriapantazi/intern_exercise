@@ -2,6 +2,7 @@
 
 import unittest
 
+import app
 from app import welcome, calculate_delivery_cost, construct_response_body
 
 
