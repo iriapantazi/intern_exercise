@@ -1,3 +1,5 @@
+python_app/ebay_app/__pycache__/
+python_app/ebay_app/tests/__pycache__/
 .gradle
 .idea
 build

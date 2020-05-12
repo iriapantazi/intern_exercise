@@ -1,0 +1,41 @@
+<html>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type=text/javascript>
+  $(function() {
+    $('a#calculate').bind('click', function() {
+        $.ajax({
+            url: 'http://127.0.0.1:5001/quotes',
+            data: JSON.stringify({pickup_postcode: $('input[name="pickup_postcode"]').val(), delivery_postcode: $('input[name="delivery_postcode"]').val(), vehicle: $('input[name="vehicle"]').val()}),
+            contentType: "application/json",
+            type: 'POST',
+            success: function(data) {
+                $("#result").text(data.price);
+                $("#pick").text(data.pickup_postcode);
+                $("#deli").text(data.delivery_postcode);
+                $("#vehi").text(data.vehicle);
+            }})
+    }
+                         )
+  });
+</script>
+  <h1>Delivery cost quote calculator</h1>
+
+  <div>
+    pickup_postcode: <input type=text size=5 name="pickup_postcode"> 
+    delivery_postcode: <input type=text size=5 name="delivery_postcode"> 
+    vehicle: <input type=text size=5 name="vehicle"> 
+    <!--span id=result>?</span-->
+  </div>
+
+  <p>
+    <a href=# id=calculate>Calculate total cost</a>
+  </p>
+
+
+  <p>
+    <a>A delivery from <span id=pick>?</span> to <span id=deli>?</span> using a 
+      <span id=vehi>?</span> will cost you £ <span id=result>?</span>. </a>
+  </p>
+
+
+</html>
