@@ -56,7 +56,7 @@ def quotes_post_handler(request):
     if vehicle not in DELIVERY_MARKUPS:
         msg = (f'Vehicle type {vehicle} is not valid, hence the cost of delivery through'
         ' this vehicle is not taken under consideration in the cost calculation.')
-        return(f'{msg}')
+        vehicle = 'bicycle'
     vehicle_cost = DELIVERY_MARKUPS.get(vehicle, 1)
     cost = calculate_delivery_cost(pickup, delivery, vehicle_cost)
     response = construct_response_body(pickup, delivery, cost, vehicle)
