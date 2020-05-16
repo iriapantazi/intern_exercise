@@ -1,7 +1,12 @@
 #! /usr/bin/env python
 
 import json
+import requests
+import re
+
 from flask import Flask, request, render_template, jsonify
+
+
 app = Flask(__name__)
 
 # constants
@@ -11,6 +16,7 @@ DELIVERY_MARKUPS = {
     "parsel_car": 1.20,
     "small_van": 1.30,
     "large_van": 1.40,
+    "no vehicle": 1.00,
 }
 
 
@@ -47,20 +53,43 @@ def quotes_post_handler(request):
     This function creates the body of the request,
     and returns a response in json format.
     """
+    
     body = request.get_json()
-    #if not ('pickup_postcode' in body.keys() or 'delivery_postcode' in body.keys() or 'vehicle' in body.keys()):
-    #    msg = (f'No valid input was provided.')
-    pickup = body.get('pickup_postcode')
-    delivery = body.get('delivery_postcode')
-    vehicle = body.get('vehicle')
+    try:
+        pickup = body.get('pickup_postcode')
+        delivery = body.get('delivery_postcode')
+        vehicle = body.get('vehicle')
+    except Exception as e:
+        return(f'No valid body in post request was found. Stopping with error {e}.')
+    
+    # regex validation of input
+    pickup, delivery, vehicle = validate_body_characters(pickup, delivery, vehicle)
+
+    # default veficle will be 'no vehicle'
     if vehicle not in DELIVERY_MARKUPS:
-        msg = (f'Vehicle type {vehicle} is not valid, hence the cost of delivery through'
-        ' this vehicle is not taken under consideration in the cost calculation.')
-        vehicle = 'bicycle'
+        vehicle = 'no vehicle'
+    
     vehicle_cost = DELIVERY_MARKUPS.get(vehicle, 1)
+
+    # cost calculation
     cost = calculate_delivery_cost(pickup, delivery, vehicle_cost)
+
+    # response construction
     response = construct_response_body(pickup, delivery, cost, vehicle)
+
     return jsonify(response)
+
+
+def validate_body_characters(pick, deli, vehi):
+    """
+    This function removes characters that are not in the
+    range a-z, A-Z, 0-9, so that the base-36 integer can be
+    derived.
+    """
+    pick = re.sub(r'[^a-zA-Z0-9]', '', pick)
+    deli = re.sub(r'[^a-zA-Z0-9]', '', deli)
+    vehi = re.sub(r'[^a-zA-Z0-9]', '', vehi)
+    return pick, deli, vehi
 
 
 def calculate_delivery_cost(pickup, delivery, vehicle_cost=1):
@@ -75,6 +104,8 @@ def calculate_delivery_cost(pickup, delivery, vehicle_cost=1):
         cost = round((abs(int(delivery, base=36) - int(pickup, base=36)) * vehicle_cost) / 1E8 )
     except ValueError:
         cost = -1
+    except Exception as e:
+        cost = 'Error'
     return cost
 
 
