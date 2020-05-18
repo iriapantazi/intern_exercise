@@ -3,7 +3,8 @@
 import requests, pytest
 import json
 
-from app import DELIVERY_MARKUPS, calculate_delivery_cost
+from app import calculate_delivery_cost
+from quote import DELIVERY_MARKUPS
 
 
 

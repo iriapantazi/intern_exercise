@@ -3,6 +3,7 @@
 import unittest
 
 import app
+"""
 from app import welcome, calculate_delivery_cost, construct_response_body
 
 
@@ -31,4 +32,4 @@ class Testing(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    
+"""
